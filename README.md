@@ -20,7 +20,7 @@ The API allows clients to browse menu products, place food orders, retrieve orde
 ## 2. File Layout
 
 ```text
-c:\FoodDelivery\
+food-order-api/
 ├── main.go            # Entry point, dependency injection wiring, timeouts, starts server
 ├── models.go          # Domain models, enum constants, request/response structs, JSON tags
 ├── store.go           # Thread-safe in-memory store with sync.RWMutex and deep cloning
@@ -41,6 +41,7 @@ c:\FoodDelivery\
   ```powershell
   go version
   ```
+  > **Tip:** If you just installed Go and your terminal says `go : The term 'go' is not recognized`, close and reopen your terminal (or run `$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")`) to load the updated system PATH.
 
 ### Running the Server
 ```powershell
@@ -49,20 +50,30 @@ go run .
 The server will start listening on **`http://localhost:8080`**.
 
 ### Running Tests
-Run all unit, concurrency, and HTTP endpoint tests:
+
+**Standard Tests (Recommended for local dev):**
+Runs all unit, state machine, and concurrent HTTP integration tests:
 ```powershell
 go test -v ./...
 ```
 
-Run static analysis check:
+**Static Analysis:**
 ```powershell
 go vet ./...
 ```
 
-Run race detector (requires a C compiler / MinGW-w64 on Windows):
+**Race Detector (Optional):**
 ```powershell
 go test -race ./...
 ```
+> **Note for Windows users:** Go's race detector (`-race`) uses ThreadSanitizer, which requires CGO and a C compiler (GCC/MinGW-w64).
+> - On Linux, macOS, and GitHub Actions CI, `-race` works out of the box.
+> - On Windows without a C compiler, running `-race` will output `go: -race requires cgo`. For local testing, `go test -v ./...` is all you need.
+> - If you want to run `-race` locally on Windows, install MinGW-w64 via PowerShell:
+>   ```powershell
+>   winget install -e --id BrechtSanders.WinLibs.POSIX.UCRT
+>   ```
+>   Then restart PowerShell and run with `$env:CGO_ENABLED="1"`.
 
 ---
 
